@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>경기도 기업환경 개선사업 · 3분 자가진단</title>
+    <style>
+        /* Basic resets and typography */
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+        }
+        h2 {
+            margin-top: 0;
+            color: #1f3a8a;
+        }
+        /*
+         * Hero section
+         *
+         * The hero now uses the professional poster as a background image
+         * and overlays a semi‑transparent layer with a succinct title,
+         * subtitle and tagline. The previous implementation displayed the
+         * image inline which caused duplication of text when combined
+         * with an overlay. To avoid that confusion and improve
+         * reliability, the image is applied via CSS as a background
+         * and the overlay text only contains the key messages (no
+         * repeating bullet lists). The hero occupies enough vertical
+         * space to create a strong first impression and scales with
+         * the viewport.
+         */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 65vh;
+            min-height: 520px;
+            /* Updated gradient for a lighter and more dynamic feel */
+            background: linear-gradient(120deg, #0d47a1 0%, #1e88e5 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-align: center;
+            overflow: hidden;
+        }
+        /* No ::after overlay needed when using a gradient background */
+        /*
+         * Hero content overlay: centered text with a clear hierarchy.
+         * Key messages and a succinct bullet list are presented on
+         * top of a gradient background. The bullet list clearly
+         * communicates the maximum support amounts per category.
+         */
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 16px;
+    /* Slight drop shadow for better contrast on bright backgrounds */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        .hero-content h1 {
+            margin: 0;
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.25;
+        }
+        .hero-content h2 {
+            margin: 16px 0 8px;
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffca28;
+        }
+        .hero-content .hero-tagline {
+    margin: 0 0 20px;
+    font-size: 20px;
+    font-weight: 400;
+        }
+        .hero-content .hero-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 420px;
+    text-align: left;
+        }
+        .hero-content .hero-list li {
+    font-size: 18px;
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 24px;
+        }
+        .hero-content .hero-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background-color: #ffca28;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Decorative shape at the bottom of the hero for a smooth transition to the content below */
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: #f8fafc;
+            clip-path: polygon(0 100%, 100% 0, 100% 100%);
+            pointer-events: none;
+        }
+        /* CTA bar containing the primary and secondary actions */
+        .cta-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            padding: 24px 16px;
+            background-color: #1f3a8a;
+        }
+        .cta-container .cta-button {
+            background-color: #eaa218;
+            color: #1f3a8a;
+            font-weight: bold;
+            font-size: 20px;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .cta-container .kakao-button {
+            background-color: #fee500;
+            color: #3c1e1e;
+            font-weight: bold;
+            font-size: 20px;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        /* Modal overlay and dialog wrapper */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: #ffffff;
+            width: 90%;
+            max-width: 720px;
+            border-radius: 20px;
+            padding: 32px 36px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+        /* Step containers hidden by default */
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .step label {
+            display: block;
+            margin-top: 16px;
+            font-size: 16px;
+            color: #374151;
+            font-weight: 500;
+        }
+        .step select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .step input[type="checkbox"] {
+            margin-right: 6px;
+        }
+
+        /* Style text inputs similarly to selects */
+        .step input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .buttons {
+            margin-top: 24px;
+            text-align: right;
+        }
+        .buttons button {
+            background-color: #143d7d;
+            color: #ffffff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            margin-left: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .buttons button:first-child {
+            margin-left: 0;
+        }
+
+        .buttons button:hover {
+            background-color: #274187;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        /* Results list styling */
+        #resultDetails ul {
+            padding-left: 20px;
+        }
+        #resultDetails li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        /* Kakao consult button inside modal */
+        .modal .kakao-button {
+            display: inline-block;
+            background-color: #fee500;
+            color: #1e1d00;
+            padding: 12px 32px;
+            border-radius: 40px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 18px;
+            margin-top: 16px;
+            transition: background-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .modal .kakao-button:hover {
+            background-color: #e5d60d;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Style paragraph text in the modal for improved readability */
+        .modal p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #374151;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+
+/* === Design Overrides === */
+/* Removed outdated hero overrides that relied on the poster image. The hero
+   now uses a gradient background and custom overlay defined earlier. */
+
+.cta-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 16px;
+    /* Slightly lighter background to complement the hero */
+    background-color: #0d47a1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.cta-container .cta-button,
+.cta-container .kakao-button {
+    border-radius: 40px;
+    padding: 14px 32px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.cta-container .cta-button {
+    background-color: #f59e0b;
+    color: #0d47a1;
+}
+.cta-container .cta-button:hover {
+    background-color: #d97706;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+.cta-container .kakao-button {
+    background-color: #FEE500;
+    color: #1e1d00;
+}
+.cta-container .kakao-button:hover {
+    background-color: #e5d60d;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+/* === End Overrides === */
+</style>
+    <!-- Load html2canvas for capturing result as an image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <!-- (Optional) Debug banner removed for production version -->
+    <!-- Hero section with gradient background and succinct overlay -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>경기도 기업환경 개선사업</h1>
+            <h2>3분 자가진단</h2>
+            <p class="hero-tagline">지원 한도 한눈에 확인</p>
+            <ul class="hero-list">
+                <li>작업환경 개선 · 최대 2,000만</li>
+                <li>노동환경 개선 · 최대 4,000만</li>
+                <li>지식산업센터 보수 · 최대 6,000만</li>
+                <li>소방시설 개선 · 최대 7,000만</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- CTA bar: Self-check and Kakao consultation -->
+    <div class="cta-container">
+        <button id="startCheck" class="cta-button">3분 자가진단</button>
+        <!-- Replace the href with your actual KakaoTalk open chat link -->
+        <a href="https://open.kakao.com/o/swMScrNh" class="kakao-button" target="_blank">카카오톡 상담하기</a>
+    </div>
+
+    <!-- Modal overlay for the self-check wizard -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <!-- Step 1: Basic info -->
+            <div class="step active" data-step="1">
+                <h2>① 기본 정보</h2>
+                <!-- New fields: Business name, Business registration number, contact -->
+                <label>사업자명</label>
+                <input type="text" id="bizNameInput" placeholder="회사명을 입력하세요">
+                <label>사업자번호</label>
+                <input type="text" id="bizNoInput" placeholder="000-00-00000">
+                <label>담당자 연락처</label>
+                <input type="text" id="contactInput" placeholder="010-1234-5678">
+                <label>사업장 소재지(경기도)</label>
+                    <select id="citySelect">
+                        <option value="">-- 선택 --</option>
+                        <option value="수원시">수원시</option>
+                        <option value="성남시">성남시</option>
+                        <option value="고양시">고양시</option>
+                        <option value="용인시">용인시</option>
+                        <option value="부천시">부천시</option>
+                        <option value="안산시">안산시</option>
+                        <option value="안양시">안양시</option>
+                        <option value="남양주시">남양주시</option>
+                        <option value="화성시">화성시</option>
+                        <option value="평택시">평택시</option>
+                        <option value="의정부시">의정부시</option>
+                        <option value="파주시">파주시</option>
+                        <option value="시흥시">시흥시</option>
+                        <option value="김포시">김포시</option>
+                        <option value="광명시">광명시</option>
+                        <option value="광주시">광주시</option>
+                        <option value="군포시">군포시</option>
+                        <option value="하남시">하남시</option>
+                        <option value="오산시">오산시</option>
+                        <option value="양주시">양주시</option>
+                        <option value="구리시">구리시</option>
+                        <option value="안성시">안성시</option>
+                        <option value="포천시">포천시</option>
+                        <option value="의왕시">의왕시</option>
+                        <option value="여주시">여주시</option>
+                        <option value="이천시">이천시</option>
+                        <option value="동두천시">동두천시</option>
+                        <option value="과천시">과천시</option>
+                        <option value="가평군">가평군</option>
+                        <option value="양평군">양평군</option>
+                        <option value="연천군">연천군</option>
+                    </select>
+                <label>업종</label>
+                <select id="industrySelect">
+                    <option value="">-- 선택 --</option>
+                    <option value="manufacturing">제조업</option>
+                    <option value="non-manufacturing">비제조(물류/오피스 등)</option>
+                </select>
+                <label>상시 근로자 수</label>
+                <select id="employeesSelect">
+                    <option value="">-- 선택 --</option>
+                    <option value="<10">10명 미만</option>
+                    <option value="10-49">10–49명</option>
+                    <option value="50-199">50–199명</option>
+                    <option value="200+">200명 이상</option>
+                </select>
+                <label>시설 유형</label>
+                <select id="facilitySelect">
+                    <option value="">-- 선택 --</option>
+                    <option value="factory">공장/제조시설</option>
+                    <option value="kicenter">지식산업센터 입주</option>
+                    <option value="office">사무/창고</option>
+                </select>
+                <label>건물(또는 센터) 준공연차</label>
+                <select id="buildingAgeSelect">
+                    <option value="">-- 선택 --</option>
+                    <option value="<7">7년 미만</option>
+                    <option value="7-14">7–14년</option>
+                    <option value="15+">15년 이상</option>
+                </select>
+                <div class="buttons">
+                    <button id="next1">다음</button>
+                </div>
+            </div>
+            <!-- Step 2: Improvement items -->
+            <div class="step" data-step="2">
+                <h2>② 개선 희망 항목</h2>
+                <p>개선이 필요한 항목을 선택하세요. (복수 선택 가능)</p>
+                <label><input type="checkbox" value="floor"> 바닥/벽/천장 (에폭시·판넬 교체 등)</label>
+                <label><input type="checkbox" value="vent"> 환기/집진 (덕트·팬·집진기)</label>
+                <label><input type="checkbox" value="led"> LED 조명 (하이베이/라인형)</label>
+                <label><input type="checkbox" value="welfare"> 복지시설 (식당·휴게·탈의·샤워)</label>
+                <label><input type="checkbox" value="fire"> 소방시설 (감지·경보·스프링클러)</label>
+                <label><input type="checkbox" value="elec"> 전기/배선 (분전반·배선·콘센트)</label>
+                <label><input type="checkbox" value="restroom"> 화장실/배관 (위생·방수·교체)</label>
+                <label><input type="checkbox" value="access"> 안전/동선 (난간·바닥미끄럼)</label>
+                <label><input type="checkbox" value="other"> 기타 (기반·주차·배수 등)</label>
+                <div class="buttons">
+                    <button id="prev2">이전</button>
+                    <button id="next2">다음</button>
+                </div>
+            </div>
+            <!-- Step 3: Budget and schedule -->
+            <div class="step" data-step="3">
+                <h2>③ 예산 · 일정</h2>
+                <label>예상 공사 예산 (부가세 포함)</label>
+                <select id="budgetSelect">
+                    <option value="">-- 선택 --</option>
+                    <option value="<2000">2,000만원 미만</option>
+                    <option value="2000-4000">2,000–4,000만원</option>
+                    <option value="4000-7000">4,000–7,000만원</option>
+                    <option value="7000+">7,000만원 이상</option>
+                </select>
+                <label>희망 일정</label>
+                <select id="timelineSelect">
+                    <option value="">-- 선택 --</option>
+                    <option value="<1m">1개월 미만</option>
+                    <option value="1-3m">1–3개월</option>
+                    <option value="4-6m">4–6개월</option>
+                </select>
+                <label>준비 정도</label>
+                <select id="readinessSelect">
+                    <option value="">-- 선택 --</option>
+                    <option value="idea">아이디어 단계</option>
+                    <option value="photos">현장 사진 보유</option>
+                    <option value="quotes">타사 견적/도면 보유</option>
+                </select>
+                <div class="buttons">
+                    <button id="prev3">이전</button>
+                    <button id="next3">결과</button>
+                </div>
+            </div>
+            <!-- Step 4: Results -->
+            <div class="step" data-step="4">
+                <h2>④ 자가진단 결과</h2>
+                <!-- Container that wraps both the input summary and result details for image capture -->
+                <div id="captureArea">
+                    <div id="inputSummary"></div>
+                    <div id="resultDetails"></div>
+                </div>
+                <div class="buttons" style="justify-content: space-between; display: flex; align-items: center;">
+                    <button id="downloadImage" style="background-color:#0d9488;">결과 이미지 다운로드</button>
+                    <button id="next4">상담 진행</button>
+                </div>
+            </div>
+            <!-- Step 5: Submit results via real-time Kakao consultation -->
+            <div class="step" data-step="5">
+                <h2>⑤ 결과 제출 및 상담</h2>
+                <p>
+                    결과를 확인하신 후 <strong>상담을 원하시면</strong>, 아래
+                    <strong>카카오톡 상담하기</strong> 버튼을 눌러 상담사에게 결과 이미지를 보내주세요.
+                    다운로드 받은 PNG 파일을 채팅창에 첨부하여 보내주시면 담당자가 즉시 연락을 드립니다.
+                    또한, 결과 이미지를 이메일(<strong>wys7309@naver.com</strong>)로 보내주시면 담당자가 연락을 드립니다.
+                </p>
+                <!-- Consultation button: Kakao chat for real-time consultation -->
+                <a href="https://open.kakao.com/o/swMScrNh" class="kakao-button" target="_blank">카카오톡 상담하기</a>
+                <div class="buttons">
+                    <button id="closeModal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to UI elements
+        const startButton = document.getElementById('startCheck');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const steps = document.querySelectorAll('.step');
+
+        /**
+         * Show a given step by index and hide all others
+         * @param {number} index
+         */
+        function showStep(index) {
+            steps.forEach((step, i) => {
+                step.classList.toggle('active', i === index);
+            });
+        }
+
+        // Open modal and display first step
+        startButton.addEventListener('click', () => {
+            modalOverlay.style.display = 'flex';
+            showStep(0);
+        });
+
+        // Step navigation buttons with validation
+        document.getElementById('next1').addEventListener('click', () => {
+            // Validate Step 1 inputs
+            const bizName = document.getElementById('bizNameInput').value.trim();
+            const bizNo = document.getElementById('bizNoInput').value.trim();
+            const contact = document.getElementById('contactInput').value.trim();
+            const city = document.getElementById('citySelect').value;
+            const industry = document.getElementById('industrySelect').value;
+            const employees = document.getElementById('employeesSelect').value;
+            const facility = document.getElementById('facilitySelect').value;
+            const buildingAge = document.getElementById('buildingAgeSelect').value;
+            if (!bizName || !bizNo || !contact || !city || !industry || !employees || !facility || !buildingAge) {
+                alert('모든 항목을 입력하세요.');
+                return;
+            }
+            showStep(1);
+        });
+
+        document.getElementById('prev2').addEventListener('click', () => {
+            showStep(0);
+        });
+        document.getElementById('next2').addEventListener('click', () => {
+            showStep(2);
+        });
+        document.getElementById('prev3').addEventListener('click', () => {
+            showStep(1);
+        });
+        document.getElementById('next3').addEventListener('click', () => {
+            // Validate Step 3 inputs
+            const budget = document.getElementById('budgetSelect').value;
+            const timeline = document.getElementById('timelineSelect').value;
+            const readiness = document.getElementById('readinessSelect').value;
+            if (!budget || !timeline || !readiness) {
+                alert('예산, 일정, 준비 정도를 모두 선택하세요.');
+                return;
+            }
+            computeResults();
+            showStep(3);
+        });
+        document.getElementById('next4').addEventListener('click', () => {
+            showStep(4);
+        });
+        document.getElementById('closeModal').addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+        });
+
+        // Capture result as image using html2canvas
+                // Capture the entire summary and result area as an image using html2canvas.
+        document.getElementById('downloadImage').addEventListener('click', () => {
+            const captureEl = document.getElementById('captureArea');
+            if (!captureEl) return;
+            html2canvas(captureEl, {
+                backgroundColor: '#ffffff' // ensure a white background for legibility
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'selfcheck_result.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error('이미지 생성 오류:', err);
+                alert('결과 이미지를 생성하는 데 실패했습니다.');
+            });
+        });
+
+
+        /**
+         * Compute results based on user selections
+         */
+        function computeResults() {
+            // Gather all selected values
+            // New fields: bizName, bizNo, contact
+            const bizName = document.getElementById('bizNameInput').value.trim();
+            const bizNo = document.getElementById('bizNoInput').value.trim();
+            const contact = document.getElementById('contactInput').value.trim();
+            const city = document.getElementById('citySelect').value;
+            const industry = document.getElementById('industrySelect').value;
+            const employees = document.getElementById('employeesSelect').value;
+            const facility = document.getElementById('facilitySelect').value;
+            const buildingAge = document.getElementById('buildingAgeSelect').value;
+            const budget = document.getElementById('budgetSelect').value;
+            const timeline = document.getElementById('timelineSelect').value;
+            const readiness = document.getElementById('readinessSelect').value;
+            const checkedBoxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const improvements = Array.from(checkedBoxes).map(cb => cb.value);
+
+            // Determine categories and statuses based on logic
+            const workItems = ['floor','vent','led','elec'];
+            const laborItems = ['welfare','restroom'];
+            const hasWork = improvements.some(v => workItems.includes(v));
+            const hasLabor = improvements.some(v => laborItems.includes(v));
+            const hasFire = improvements.includes('fire');
+            const isManufacturing = industry === 'manufacturing';
+            const isKI = facility === 'kicenter';
+            const ageOK = (buildingAge === '7-14' || buildingAge === '15+');
+
+            const results = [];
+            // 작업환경 개선
+            if (isManufacturing && hasWork) {
+                const status = (employees === '<10' || employees === '10-49') ? '유력' : '가능성 있음';
+                results.push({
+                    title: '작업환경 개선',
+                    cap: '예시 한도 최대 2,000만',
+                    status: status,
+                    why: '제조 소기업 대상 공정환경(바닥/환기/LED/전기) 개선'
+                });
+            } else {
+                results.push({
+                    title: '작업환경 개선',
+                    cap: '예시 한도 최대 2,000만',
+                    status: '해당 없음',
+                    why: '제조업 및 관련 항목 선택 시 해당'
+                });
+            }
+            // 노동환경 개선
+            if (isManufacturing && hasLabor) {
+                let status = '가능성 있음';
+                if (employees === '200+') status = '추가 확인 필요';
+                results.push({
+                    title: '노동환경(복지시설) 개선',
+                    cap: '예시 한도 최대 4,000만',
+                    status: status,
+                    why: '식당/휴게/탈의/샤워·화장실 등 복지시설 개선'
+                });
+            } else {
+                results.push({
+                    title: '노동환경(복지시설) 개선',
+                    cap: '예시 한도 최대 4,000만',
+                    status: '해당 없음',
+                    why: '복지시설(식당/휴게/탈의/샤워/화장실) 선택 시 해당'
+                });
+            }
+            // 지식산업센터 보수
+            if (isKI && ageOK && (hasLabor || hasWork)) {
+                results.push({
+                    title: '지식산업센터 보수',
+                    cap: '예시 한도 최대 6,000만',
+                    status: '가능성 있음',
+                    why: '준공 7년 이상 센터 공용/전용부 보수(센터 관리주체 협의 필요)'
+                });
+            } else {
+                results.push({
+                    title: '지식산업센터 보수',
+                    cap: '예시 한도 최대 6,000만',
+                    status: '해당 없음',
+                    why: '센터 입주 및 준공 7년 이상 조건 시 해당'
+                });
+            }
+            // 소방시설
+            if (hasFire) {
+                results.push({
+                    title: '소방시설 개선',
+                    cap: '예시 한도 최대 7,000만',
+                    status: '가능성 있음',
+                    why: '감지/경보/스프링클러 등'
+                });
+            } else {
+                results.push({
+                    title: '소방시설 개선',
+                    cap: '예시 한도 최대 7,000만',
+                    status: '해당 없음',
+                    why: '소방 관련 항목 선택 시 해당'
+                });
+            }
+            // Render results list to HTML
+            let html = '<ul>';
+            results.forEach(r => {
+                html += '<li><strong>' + r.title + '</strong>: ' + r.status + ' <small>(' + r.cap + ')</small><br/><span style="color:#6b7280">' + r.why + '</span></li>';
+            });
+            html += '</ul>';
+            document.getElementById('resultDetails').innerHTML = html;
+
+            // Map values to human-readable labels
+            const industryMap = {
+                'manufacturing': '제조업',
+                'non-manufacturing': '비제조(물류/오피스 등)'
+            };
+            const employeeMap = {
+                '<10': '10명 미만',
+                '10-49': '10–49명',
+                '50-199': '50–199명',
+                '200+': '200명 이상'
+            };
+            const facilityMap = {
+                'factory': '공장/제조시설',
+                'kicenter': '지식산업센터 입주',
+                'office': '사무/창고'
+            };
+            const buildingAgeMap = {
+                '<7': '7년 미만',
+                '7-14': '7–14년',
+                '15+': '15년 이상'
+            };
+            const budgetMap = {
+                '<2000': '2,000만원 미만',
+                '2000-4000': '2,000–4,000만원',
+                '4000-7000': '4,000–7,000만원',
+                '7000+': '7,000만원 이상'
+            };
+            const timelineMap = {
+                '<1m': '1개월 미만',
+                '1-3m': '1–3개월',
+                '4-6m': '4–6개월'
+            };
+            const readinessMap = {
+                'idea': '아이디어 단계',
+                'photos': '현장 사진 보유',
+                'quotes': '타사 견적/도면 보유'
+            };
+            const improvementMap = {
+                'floor': '바닥/벽/천장',
+                'vent': '환기/집진',
+                'led': 'LED 조명',
+                'welfare': '복지시설',
+                'fire': '소방시설',
+                'elec': '전기/배선',
+                'restroom': '화장실/배관',
+                'access': '안전/동선',
+                'other': '기타'
+            };
+
+            const improvementsText = improvements.length ? improvements.map(v => improvementMap[v] || v).join(', ') : '-';
+
+            // Build summary HTML including business info
+            let summaryHtml = '<h3 style="margin-bottom:8px;">입력 정보 요약</h3><ul>';
+            summaryHtml += '<li>사업자명: ' + (bizName || '-') + '</li>';
+            summaryHtml += '<li>사업자번호: ' + (bizNo || '-') + '</li>';
+            summaryHtml += '<li>담당자 연락처: ' + (contact || '-') + '</li>';
+            summaryHtml += '<li>소재지: ' + (city || '-') + '</li>';
+            summaryHtml += '<li>업종: ' + (industryMap[industry] || '-') + '</li>';
+            summaryHtml += '<li>근로자 수: ' + (employeeMap[employees] || '-') + '</li>';
+            summaryHtml += '<li>시설 유형: ' + (facilityMap[facility] || '-') + '</li>';
+            summaryHtml += '<li>준공 연차: ' + (buildingAgeMap[buildingAge] || '-') + '</li>';
+            summaryHtml += '<li>예상 예산: ' + (budgetMap[budget] || '-') + '</li>';
+            summaryHtml += '<li>희망 일정: ' + (timelineMap[timeline] || '-') + '</li>';
+            summaryHtml += '<li>준비 정도: ' + (readinessMap[readiness] || '-') + '</li>';
+            summaryHtml += '<li>선택 항목: ' + improvementsText + '</li>';
+            summaryHtml += '</ul>';
+            document.getElementById('inputSummary').innerHTML = summaryHtml;
+        }
+    </script>
+</body>
+</html>
